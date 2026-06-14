@@ -25,3 +25,5 @@ npm-debug.log*
 # --- IDE & System Config ---
 .vscode/
 .idea/
+
+server/uploads/
