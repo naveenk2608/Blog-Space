@@ -1,0 +1,22 @@
+/* Comment List Container */
+.comments-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.comments-header {
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+/* No Comments State */
+.no-comments {
+  color: #888;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}

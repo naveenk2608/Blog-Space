@@ -1,0 +1,247 @@
+.edit-profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.edit-profile-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.edit-profile-card h1 {
+  margin: 0 0 30px 0;
+  color: #333;
+  font-size: 28px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4a90d9;
+}
+
+/* Username input wrapper */
+.username-input-wrapper {
+  position: relative;
+}
+
+.username-input-wrapper input.username-available {
+  border-color: #22c55e;
+}
+
+.username-input-wrapper input.username-taken {
+  border-color: #ef4444;
+}
+
+.username-status {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.username-status.checking {
+  color: #6b7280;
+}
+
+.username-status.available {
+  color: #22c55e;
+}
+
+.username-status.taken {
+  color: #ef4444;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.profile-pic-group {
+  text-align: center;
+}
+
+.profile-pic-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-pic-preview img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-pic-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-pic-placeholder svg {
+  width: 50px;
+  height: 50px;
+  color: #999;
+}
+
+.change-pic-btn {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.change-pic-btn:hover {
+  background: #eee;
+}
+
+.delete-pic-btn {
+  padding: 8px 16px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #c00;
+  transition: all 0.2s ease;
+}
+
+.delete-pic-btn:hover:not(:disabled) {
+  background: #fdd;
+}
+
+.delete-pic-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-pic-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 32px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #4a90d9;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #555;
+}
+
+.btn-secondary:hover {
+  background: #eee;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert-error {
+  background: #fee;
+  color: #c00;
+  border: 1px solid #fcc;
+}
+
+.alert-success {
+  background: #efe;
+  color: #090;
+  border: 1px solid #cfc;
+}
+
+@media (max-width: 600px) {
+  .edit-profile-card {
+    padding: 24px;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}

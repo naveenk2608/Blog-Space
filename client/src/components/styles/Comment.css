@@ -1,0 +1,126 @@
+/* Individual Comment Wrapper */
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  padding: 24px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+}
+
+.comment:last-child {
+  border-bottom: 1px solid #E5E7EB;
+}
+
+/* Avatar */
+.comment .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Comment Body */
+.comment-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header: Name & Handle */
+.comment-header {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.comment-header strong {
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.comment-header .username {
+  color: #6B7280;
+  font-size: 14px;
+}
+
+/* Comment Text */
+.comment-content {
+  margin: 4px 0;
+  color: #050505;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* Date */
+.comment .date {
+  font-size: 14px;
+  color: #9CA3AF;
+}
+
+/* Delete Button */
+.comment .delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  color: #EF4444;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.comment .delete-btn:hover {
+  opacity: 0.7;
+}
+
+/* Comment Actions / Footer */
+.comment-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.comment-actions button {
+  background: none;
+  border: none;
+  color: #65676b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.comment-actions button:hover {
+  text-decoration: underline;
+  color: #1877f2;
+}
+
+/* Edit Mode Styling */
+.edit-comment textarea {
+  width: 100%;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.edit-comment textarea:focus {
+  outline: none;
+  border-color: #3B82F6;
+}

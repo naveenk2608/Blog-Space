@@ -1,0 +1,27 @@
+# --- Dependencies ---
+node_modules/
+/client/node_modules/
+/server/node_modules/
+
+# --- Environment Files ---
+# These contain your database secrets and API keys
+.env
+.env.*
+client/.env
+server/.env
+
+# --- Build & Output Folders ---
+# Ignore the production build folders
+client/dist/
+server/dist/
+dist/
+build/
+
+# --- Logs & Cache ---
+*.log
+npm-debug.log*
+.DS_Store
+
+# --- IDE & System Config ---
+.vscode/
+.idea/

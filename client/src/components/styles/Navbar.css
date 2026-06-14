@@ -1,0 +1,181 @@
+.navbar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo with Icon */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #3B82F6;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #3B82F6;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-link {
+  color: #374151;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #3B82F6;
+}
+
+/* Write Button - Primary Blue */
+.write-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #3B82F6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.write-btn:hover {
+  background-color: #2563EB;
+  color: white;
+}
+
+.write-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Profile Link */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #E5E7EB;
+}
+
+.nav-username {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-link:hover .nav-username {
+  color: #3B82F6;
+}
+
+/* Logout Button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #6B7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #F3F4F6;
+  color: #374151;
+}
+
+.logout-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.logout-text {
+  display: inline;
+}
+
+/* Register Button */
+.register-btn {
+  background-color: #3B82F6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+}
+
+.register-btn:hover {
+  background-color: #2563EB;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 16px;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+  
+  .nav-links {
+    gap: 12px;
+  }
+  
+  .nav-username,
+  .logout-text {
+    display: none;
+  }
+  
+  .write-btn span {
+    display: none;
+  }
+  
+  .write-btn {
+    padding: 8px 10px;
+  }
+}

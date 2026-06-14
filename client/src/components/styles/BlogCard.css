@@ -1,0 +1,131 @@
+/* Blog Card Container */
+.blog-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Cover Image */
+.card-image-link {
+  display: block;
+}
+
+.card-cover {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* Card Content */
+.card-content {
+  padding: 20px;
+}
+
+/* Title */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+/* Excerpt */
+.card-excerpt {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Author Row */
+.card-author-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.card-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+}
+
+.card-author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-author-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.card-author-username {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Card Footer */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.card-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.card-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.card-stat svg {
+  width: 16px;
+  height: 16px;
+}
+
+.card-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.card-date svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Links */
+.card-text-link {
+  text-decoration: none;
+}
+
+.card-text-link:hover .card-title {
+  color: #3b82f6;
+}
