@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getAvatarUrl } from '../utils/imageUrl';
 import './styles/EditProfile.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const EditProfile = () => {
   const { user, fetchUser } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -23,9 +26,6 @@ const EditProfile = () => {
   const [usernameStatus, setUsernameStatus] = useState({ checked: false, available: null });
   const [checkingUsername, setCheckingUsername] = useState(false);
 
-  // Base URL for images
-  const BASE_URL = "http://localhost:5000";
-
   useEffect(() => {
     if (user) {
       setFormData({
@@ -35,10 +35,7 @@ const EditProfile = () => {
         profile_pic: user.profile_pic || null
       });
       if (user.profile_pic) {
-      setPreview(getImagePath(user.profile_pic));
-      // Also update the navbar/profile avatar immediately after selecting/saving.
-      // Since AuthContext does not expose setUser, we force re-render by updating the preview state.
-      // (Navbar uses AuthContext's `user`, so navigation/refetch will still be the source of truth.)
+      setPreview(getAvatarUrl(user.profile_pic, user.name));
       }
     }
   }, [user]);
@@ -47,9 +44,9 @@ const EditProfile = () => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
     if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}?t=${Date.now()}`;
+      return `${API_BASE_URL}${path}?t=${Date.now()}`;
     }
-    return `${BASE_URL}/uploads/${path}?t=${Date.now()}`;
+    return `${API_BASE_URL}/uploads/${path}?t=${Date.now()}`;
   };
 
   const handleChange = (e) => {

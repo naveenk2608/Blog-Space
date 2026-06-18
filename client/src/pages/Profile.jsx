@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import ProfileBlogCard from '../components/ProfileBlogCard';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getAvatarUrl } from '../utils/imageUrl';
 import './styles/Profile.css';
 
 const Profile = () => {
@@ -14,22 +15,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
-
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path) => {
-    if (!path) return 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(profile?.name || 'User');
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}?t=${Date.now()}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}?t=${Date.now()}`;
-  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -113,10 +98,10 @@ const Profile = () => {
         <div className="profile-header-content">
           {/* Avatar with Upload Overlay */}
           <div className="profile-avatar-container">
-            <img 
-              src={getImagePath(profile.profile_pic)} 
-              alt={profile.name} 
-              className="profile-avatar" 
+            <img
+              src={getAvatarUrl(profile.profile_pic, profile.name)}
+              alt={profile.name}
+              className="profile-avatar"
             />
             {isOwnProfile && (
               <div className="profile-avatar-overlay" onClick={triggerFileInput}>

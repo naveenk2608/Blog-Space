@@ -1,35 +1,9 @@
 import { Link } from 'react-router-dom';
 import LikeButton from './LikeButton';
+import { getImageUrl, getAvatarUrl } from '../utils/imageUrl';
 import './styles/BlogCard.css';
 
 const BlogCard = ({ blog }) => {
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path) => {
-    if (!path) return 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=450&fit=crop';
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
-
-  const getAvatarPath = (path) => {
-    if (!path) return 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(blog?.name || 'User');
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   // Format date
   const formatDate = (dateString) => {
@@ -50,8 +24,8 @@ const BlogCard = ({ blog }) => {
   return (
     <div className="blog-card">
       <Link to={`/blog/${blog.id}`} className="card-image-link">
-        <img 
-          src={getImagePath(blog.cover_image)} 
+        <img
+          src={getImageUrl(blog.cover_image)} 
           alt={blog.title} 
           className="card-cover" 
           onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=450&fit=crop'; }}
@@ -65,8 +39,8 @@ const BlogCard = ({ blog }) => {
         </Link>
 
         <div className="card-author-row">
-          <img 
-            src={getAvatarPath(blog.profile_pic)} 
+          <img
+            src={getAvatarUrl(blog.profile_pic, blog.name)} 
             alt={blog.name} 
             className="card-avatar" 
             onError={(e) => { e.target.src = 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(blog?.name || 'User'); }}
