@@ -1,11 +1,17 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../uploads/');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Set storage engine
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Navigate up one level from 'middleware' to find 'uploads' in the server root
-    cb(null, path.join(__dirname, '../uploads/')); 
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -21,7 +27,6 @@ const fileFilter = (req, file, cb) => {
     return cb(null, true);
   }
 
-  // Multer-style error so we can map it to a clean client message
   const err = new Error('This file type is not supported');
   err.code = 'LIMIT_UNSUPPORTED_TYPE';
   return cb(err);
