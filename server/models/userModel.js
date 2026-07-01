@@ -63,9 +63,9 @@ const updateUser = async (id, updates) => {
 const getUserStats = async (userId) => {
   // blogs count (published only)
   const [blogsCountRows] = await pool.execute(
-    'SELECT COUNT(*) as count FROM blogs WHERE user_id = ? AND status = "published"',
-    [userId]
-  );
+  'SELECT COUNT(*) as count FROM blogs WHERE user_id = ? AND status = ?',
+  [userId, 'published']
+);
   const blogsCount = blogsCountRows[0].count;
 
   // total likes received (on blogs and comments)
