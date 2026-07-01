@@ -1,22 +1,8 @@
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../utils/imageUrl';
 import './styles/ProfileBlogCard.css';
 
 const ProfileBlogCard = ({ blog, onDelete }) => {
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path) => {
-    if (!path) return 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=450&fit=crop';
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   // Get excerpt (short preview)
   const getExcerpt = (content) => {
@@ -35,8 +21,8 @@ const ProfileBlogCard = ({ blog, onDelete }) => {
   return (
     <div className="profile-blog-card">
       <Link to={`/blog/${blog.id}`} className="profile-card-image-link">
-        <img 
-          src={getImagePath(blog.cover_image)} 
+        <img
+          src={getImageUrl(blog.cover_image)} 
           alt={blog.title} 
           className="profile-card-cover" 
           onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=450&fit=crop'; }}

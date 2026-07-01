@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import API from '../services/api';
+import { getImageUrl } from '../utils/imageUrl';
 import './styles/CreateBlog.css'; // reuse same styles
 
 const EditBlog = () => {
@@ -15,22 +16,6 @@ const EditBlog = () => {
   });
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState(null);
-
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path) => {
-    if (!path) return '/default-avatar.png';
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -89,7 +74,7 @@ const EditBlog = () => {
   if (loading) return <div>Loading...</div>;
 
   // Determine which image to show in the upload area
-  const showImage = previewUrl || (form.existingCover && !form.cover_image ? getImagePath(form.existingCover) : null);
+  const showImage = previewUrl || (form.existingCover && !form.cover_image ? getImageUrl(form.existingCover, '/default-avatar.png') : null);
 
   return (
     <div className="create-blog">

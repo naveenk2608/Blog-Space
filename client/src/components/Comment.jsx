@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import LikeButton from './LikeButton';
+import { getAvatarUrl } from '../utils/imageUrl';
 import './styles/Comment.css';
 
 const Comment = ({ comment, onUpdate, onDelete }) => {
@@ -9,22 +10,6 @@ const Comment = ({ comment, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
   const isOwner = user && user.id === comment.user_id;
-
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path, fallbackName = 'User') => {
-    if (!path) return 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(fallbackName);
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   const handleUpdate = async () => {
     try {
@@ -50,7 +35,7 @@ const Comment = ({ comment, onUpdate, onDelete }) => {
   return (
     // Inside your Comment.jsx return:
 <div className="comment">
-  <img src={getImagePath(comment.profile_pic, comment.name)} alt={comment.name} className="avatar" />
+  <img src={getAvatarUrl(comment.profile_pic, comment.name)} alt={comment.name} className="avatar" />
   
   <div className="comment-body">
     <div className="comment-header">

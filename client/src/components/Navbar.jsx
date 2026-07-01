@@ -1,30 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getAvatarUrl } from '../utils/imageUrl';
 import './styles/Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-
-  // Helper function to get profile pic URL
-  const getProfilePic = (path) => {
-    const BASE_URL = "http://localhost:5000";
-    
-    // If no path, return default avatar using DiceBear
-    if (!path) return 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(user?.name || 'User');
-    
-    // If it's already a full URL, return as is
-    if (path.startsWith('http')) return path;
-    
-    // If path already starts with /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}?t=${Date.now()}`;
-    }
-    
-    // Otherwise add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}?t=${Date.now()}`;
-  };
-
-  // Get profile pic from user object - check multiple possible field names
   const userProfilePic = user?.profile_pic || user?.profilePic || user?.avatar || null;
 
   return (
@@ -51,9 +31,9 @@ const Navbar = () => {
                 Write
               </Link>
               <Link to={`/profile/${user.username}`} className="profile-link">
-                <img 
-                  src={getProfilePic(userProfilePic)} 
-                  alt={user.username} 
+                <img
+                  src={getAvatarUrl(userProfilePic, user?.name)}
+                  alt={user.username}
                   className="nav-avatar"
                   onError={(e) => { e.target.src = 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(user?.name || 'User'); }}
                 />

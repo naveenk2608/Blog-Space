@@ -4,6 +4,7 @@ import CommentList from '../components/CommentList';
 import LikeButton from '../components/LikeButton';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getImageUrl, getAvatarUrl } from '../utils/imageUrl';
 import './styles/BlogDetail.css';
 
 const BlogDetail = () => {
@@ -14,32 +15,6 @@ const BlogDetail = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
-
-  // Define the base URL for your backend server
-  const BASE_URL = "http://localhost:5000";
-
-  // Helper function to build the image path correctly
-  const getImagePath = (path, fallbackName = 'User') => {
-    if (!path) return 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(fallbackName);
-    if (path.startsWith('http')) return path;
-    
-    // If path already contains /uploads/, use it directly
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    // Otherwise, add /uploads/ prefix
-    return `${BASE_URL}/uploads/${path}`;
-  };
-
-  // Helper for cover image with default fallback
-  const getCoverImagePath = (path) => {
-    if (!path) return 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=450&fit=crop';
-    if (path.startsWith('http')) return path;
-    if (path.startsWith('/uploads/')) {
-      return `${BASE_URL}${path}`;
-    }
-    return `${BASE_URL}/uploads/${path}`;
-  };
 
   useEffect(() => {
     fetchBlog();
@@ -89,7 +64,7 @@ const BlogDetail = () => {
     <div className="blog-detail-card">
       {/* Featured Image - Top of card - always show with default fallback */}
       <div className="blog-image-container">
-        <img src={getCoverImagePath(blog.cover_image)} alt="cover" className="blog-cover-image" />
+        <img src={getImageUrl(blog.cover_image)} alt="cover" className="blog-cover-image" />
       </div>
 
       {/* Title */}
@@ -98,7 +73,7 @@ const BlogDetail = () => {
       {/* Header & Metadata - Horizontal row below image */}
       <div className="blog-header-row">
         <div className="author-info">
-          <img src={getImagePath(blog.profile_pic, blog.name)} alt={blog.name} className="avatar" />
+          <img src={getAvatarUrl(blog.profile_pic, blog.name)} alt={blog.name} className="avatar" />
           <div className="author-details">
             <span className="author-name">{blog.name}</span>
             <span className="username">@{blog.username}</span>

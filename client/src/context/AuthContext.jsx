@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API from '../services/api';
 
 const AuthContext = createContext();
 
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/auth/me');
+      const res = await API.get('/auth/me');
       setUser(res.data);
     } catch (err) {
       console.error(err);
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (emailOrUsername, password) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await API.post('/auth/login', {
         emailOrUsername,
         password
       });
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (formData) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData, {
+      const res = await API.post('/auth/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       localStorage.setItem('token', res.data.token);
