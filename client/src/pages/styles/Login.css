@@ -56,3 +56,22 @@
   font-size: 14px;
   color: #555;
 }
+
+@media (max-width: 480px) {
+  .auth-container {
+    max-width: 90%;
+    margin: 24px auto;
+    padding: 20px;
+    border-radius: 6px;
+  }
+
+  .auth-container h2 {
+    font-size: 20px;
+  }
+
+  .auth-container input,
+  .auth-container button {
+    font-size: 16px;
+    padding: 14px;
+  }
+}

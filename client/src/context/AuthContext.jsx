@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
     } catch (err) {
       console.error(err);
-      logout();
+      clearAuth(); // silent cleanup, no redirect
     } finally {
       setLoading(false);
     }
@@ -65,11 +65,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  // Clears auth state without navigating — used for silent token verification failures
+  const clearAuth = () => {
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['x-auth-token'];
     setToken(null);
     setUser(null);
+  };
+
+  // Explicit logout — clears state AND redirects to login
+  const logout = () => {
+    clearAuth();
     navigate('/login');
   };
 

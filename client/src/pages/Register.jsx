@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './styles/Register.css';
+import './styles/Login.css';
 
 const Register = () => {
   const [form, setForm] = useState({

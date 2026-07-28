@@ -21,7 +21,7 @@ const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     const { name, username, bio } = req.body;
-    const profile_pic = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const profile_pic = req.file ? req.file.path : undefined;
 
     // Check if username is being changed and if it's already taken
     if (username) {

@@ -5,7 +5,7 @@ const userModel = require('../models/userModel');
 const register = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
-    let profile_pic = req.file ? `/uploads/${req.file.filename}` : null;
+    let profile_pic = req.file ? req.file.path : null;
 
     // Check if user exists
     const existingEmail = await userModel.findUserByEmail(email);
