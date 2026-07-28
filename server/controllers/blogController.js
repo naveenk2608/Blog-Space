@@ -14,7 +14,7 @@ const normalizeStatus = (status) => {
 const createBlog = async (req, res) => {
   try {
     const { title, content, status } = req.body;
-    const cover_image = req.file ? `/uploads/${req.file.filename}` : null;
+    const cover_image = req.file ? req.file.path : null;
 
     const blogId = await blogModel.createBlog({
       user_id: req.user.id,
@@ -99,7 +99,7 @@ const updateBlog = async (req, res) => {
     }
 
     const { title, content, status } = req.body;
-    const cover_image = req.file ? `/uploads/${req.file.filename}` : null;
+   const cover_image = req.file ? req.file.path : null;
 
     const updates = {};
     if (title) updates.title = title;
