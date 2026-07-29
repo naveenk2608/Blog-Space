@@ -23,29 +23,40 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="emailOrUsername"
-          placeholder="Email or Username"
-          value={form.emailOrUsername}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <Link to="/register">Register</Link></p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2>Welcome back</h2>
+        <p className="auth-subtitle">Log in to continue to BlogSpace</p>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label htmlFor="emailOrUsername">Email or Username</label>
+            <input
+              type="text"
+              id="emailOrUsername"
+              name="emailOrUsername"
+              placeholder="you@example.com"
+              value={form.emailOrUsername}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+        <p className="auth-footer-text">Don't have an account? <Link to="/register">Register</Link></p>
+      </div>
     </div>
   );
 };

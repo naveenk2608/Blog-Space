@@ -40,21 +40,36 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Register</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
-        <input type="text" name="username" placeholder="Username" onChange={handleChange} required />
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-        <div className="file-input">
-          <label>Profile Picture (optional)</label>
-          <input type="file" name="profile_pic" accept="image/*" onChange={handleFileChange} />
-        </div>
-        <button type="submit">Register</button>
-      </form>
-      <p>Already have an account? <Link to="/login">Login</Link></p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h2>Create your account</h2>
+        <p className="auth-subtitle">Join BlogSpace and start writing</p>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div className="form-field">
+            <label htmlFor="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Jane Doe" onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="janedoe" onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" onChange={handleChange} required />
+          </div>
+          <div className="form-field">
+            <label htmlFor="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" onChange={handleChange} required />
+          </div>
+          <div className="file-input">
+            <label>Profile Picture (optional)</label>
+            <input type="file" name="profile_pic" accept="image/*" onChange={handleFileChange} />
+          </div>
+          <button type="submit">Register</button>
+        </form>
+        <p className="auth-footer-text">Already have an account? <Link to="/login">Login</Link></p>
+      </div>
     </div>
   );
 };
