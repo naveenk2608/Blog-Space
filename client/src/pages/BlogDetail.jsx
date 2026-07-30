@@ -72,13 +72,13 @@ const BlogDetail = () => {
 
       {/* Header & Metadata - Horizontal row below image */}
       <div className="blog-header-row">
-        <div className="author-info">
+        <Link to={`/profile/${blog.username}`} className="author-info">
           <img src={getAvatarUrl(blog.profile_pic, blog.name)} alt={blog.name} className="avatar" />
           <div className="author-details">
             <span className="author-name">{blog.name}</span>
             <span className="username">@{blog.username}</span>
           </div>
-        </div>
+        </Link>
         
         <div className="post-meta">
           <span className="meta-item">

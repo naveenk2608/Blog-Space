@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
+import { getAvatarUrl, getImageUrl } from '../utils/imageUrl';
 import LikeButton from './LikeButton';
-import { getImageUrl, getAvatarUrl } from '../utils/imageUrl';
 import './styles/BlogCard.css';
 
 const BlogCard = ({ blog }) => {
@@ -38,7 +38,7 @@ const BlogCard = ({ blog }) => {
           <p className="card-excerpt">{getExcerpt(blog.content)}</p>
         </Link>
 
-        <div className="card-author-row">
+        <Link to={`/profile/${blog.username}`} className="card-author-row">
           <img
             src={getAvatarUrl(blog.profile_pic, blog.name)} 
             alt={blog.name} 
@@ -49,7 +49,7 @@ const BlogCard = ({ blog }) => {
             <span className="card-author-name">{blog.name}</span>
             <span className="card-author-username">@{blog.username}</span>
           </div>
-        </div>
+        </Link>
 
         <div className="card-footer">
           <LikeButton 

@@ -8,8 +8,9 @@ const getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
+    const isOwnProfile = req.user && req.user.id === user.id;
     const stats = await userModel.getUserStats(user.id);
-    const blogs = await blogModel.getBlogsByUserId(user.id, 'all');
+    const blogs = await blogModel.getBlogsByUserId(user.id, isOwnProfile ? 'all' : 'published');
     res.json({ user, stats, blogs });
   } catch (err) {
     console.error(err.message);

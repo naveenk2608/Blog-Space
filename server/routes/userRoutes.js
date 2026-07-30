@@ -8,6 +8,6 @@ const upload = require('../middleware/uploadMiddleware');
 router.put('/profile', authMiddleware, upload.single('profile_pic'), userController.updateProfile);
 router.delete('/profile-picture', authMiddleware, userController.deleteProfilePicture);
 router.get('/check-username', userController.checkUsernameAvailability);
-router.get('/:username', userController.getProfile);
+router.get('/:username', authMiddleware, userController.getProfile);
 
 module.exports = router;
