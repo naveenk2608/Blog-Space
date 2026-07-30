@@ -45,16 +45,19 @@ A full-stack blogging platform where users can write, publish, and share posts, 
 
 ## 🗄️ Database Schema
 
-A relational MySQL schema models the blogging domain across five core tables:
+A normalized MySQL schema (`schema.sql`) models the blogging domain across five tables:
 
 `users` · `blogs` · `comments` · `blog_likes` · `comment_likes`
 
-Key design points:
+| Table | Key Columns | Notes |
+|---|---|---|
+| **`users`** | `name`, `username` (unique), `email` (unique), `password`, `profile_pic`, `bio` | Username powers public profile routing (`/profile/:username`) |
+| **`blogs`** | `user_id` (FK), `title`, `content`, `cover_image`, `status` (`draft` \| `published`) | The `status` enum drives the private-drafts-vs-public-feed logic |
+| **`comments`** | `blog_id` (FK), `user_id` (FK), `content` | Supports per-post threads with edit/delete ownership checks |
+| **`blog_likes`** | `blog_id` (FK), `user_id` (FK) | Unique `(blog_id, user_id)` pair enables toggle-based like/unlike |
+| **`comment_likes`** | `comment_id` (FK), `user_id` (FK) | Unique `(comment_id, user_id)` pair, same toggle pattern |
 
-- **`users`** stores profile data (`name`, `username`, `email`, `password`, `profile_pic`, `bio`) — usernames are unique and used for public profile routing.
-- **`blogs`** includes a `status` column (`draft` / `published`) tied to each `user_id`, driving the private-drafts-vs-public-feed logic.
-- **`blog_likes`** and **`comment_likes`** are join tables tracking which user liked which blog or comment, enabling toggle-based like/unlike behavior.
-- **`comments`** links to both `blog_id` and `user_id`, supporting per-post threads with edit/delete ownership checks.
+All foreign keys cascade on delete (e.g. deleting a user removes their blogs, comments, and likes; deleting a blog removes its comments and likes).
 
 ---
 
@@ -62,6 +65,7 @@ Key design points:
 
 ```
 Blog-Space/
+├── schema.sql                      # Full MySQL schema (5 tables)
 ├── client/                         # React frontend
 │   └── src/
 │       ├── components/
@@ -150,7 +154,13 @@ git clone https://github.com/naveenk2608/Blog-Space.git
 cd Blog-Space
 ```
 
-### 2. Backend setup
+### 2. Set up the database
+
+```
+mysql -u root -p < schema.sql
+```
+
+### 3. Backend setup
 
 ```
 cd server
@@ -179,7 +189,7 @@ Run the server:
 npm run dev
 ```
 
-### 3. Frontend setup
+### 4. Frontend setup
 
 ```
 cd ../client
