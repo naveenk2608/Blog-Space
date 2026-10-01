@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
+import { IMAGE_ACCEPT } from '../utils/validation';
 import './styles/CreateBlog.css';
 
 const CreateBlog = () => {
@@ -34,9 +36,11 @@ const CreateBlog = () => {
   };
 
   const [errorMsg, setErrorMsg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (status) => {
     setErrorMsg('');
+    setSubmitting(true);
 
     const formData = new FormData();
     formData.append('title', form.title);
@@ -53,13 +57,9 @@ const CreateBlog = () => {
       navigate('/');
     } catch (err) {
       console.error(err);
-      const msg =
-        err?.response?.data?.msg ||
-        err?.response?.data?.error ||
-        err?.response?.data?.errors?.map((e) => e.msg).join(', ') ||
-        err?.message ||
-        'Upload failed';
-      setErrorMsg(msg);
+      setErrorMsg(getErrorMessage(err, 'Upload failed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -101,7 +101,7 @@ const CreateBlog = () => {
           <input
             type="file"
             id="cover"
-            accept="image/*"
+            accept={IMAGE_ACCEPT}
             onChange={handleFileChange}
             style={{ display: 'none' }}
           />
@@ -132,18 +132,14 @@ const CreateBlog = () => {
         <div className="form-actions">
           <div className="form-actions-message">
             {errorMsg ? (
-              <p className="form-error form-error-actions">
-                {errorMsg === 'This file type is not supported'
-                  ? 'This file type is not supported'
-                  : errorMsg}
-              </p>
+              <p className="form-error form-error-actions">{errorMsg}</p>
             ) : null}
           </div>
 
           <div className="form-actions-buttons">
             <button onClick={() => navigate('/')}>Cancel</button>
-            <button onClick={() => handleSubmit('draft')}>Save as Draft</button>
-            <button onClick={() => handleSubmit('published')} className="publish">Publish</button>
+            <button onClick={() => handleSubmit('draft')} disabled={submitting}>Save as Draft</button>
+            <button onClick={() => handleSubmit('published')} className="publish" disabled={submitting}>Publish</button>
           </div>
         </div>
 

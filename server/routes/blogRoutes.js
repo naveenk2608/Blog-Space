@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const blogController = require('../controllers/blogController');
-const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { optionalAuth, requireAuth } = require('../middleware/authMiddleware');
+const { uploadImage } = require('../middleware/uploadMiddleware');
 const { validateBlog, handleValidationErrors } = require('../utils/validation');
 
-router.post('/', authMiddleware, upload.single('cover_image'), validateBlog, handleValidationErrors, blogController.createBlog);
-router.get('/', authMiddleware, blogController.getBlogs);
-router.get('/:id', authMiddleware, blogController.getBlogById);
-router.put('/:id', authMiddleware, upload.single('cover_image'), blogController.updateBlog);
-router.delete('/:id', authMiddleware, blogController.deleteBlog);
+router.post('/', requireAuth, uploadImage('cover_image'), validateBlog, handleValidationErrors, blogController.createBlog);
+router.get('/', optionalAuth, blogController.getBlogs);
+router.get('/:id', optionalAuth, blogController.getBlogById);
+router.put('/:id', requireAuth, uploadImage('cover_image'), validateBlog, handleValidationErrors, blogController.updateBlog);
+router.delete('/:id', requireAuth, blogController.deleteBlog);
 
 module.exports = router;

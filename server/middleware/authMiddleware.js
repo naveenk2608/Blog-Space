@@ -1,19 +1,32 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+// Returns the user from a valid x-auth-token header, or null
+const getTokenUser = (req) => {
   const token = req.header('x-auth-token');
-  
-  // If no token, continue without user (optional auth)
-  if (!token) {
-    return next();
-  }
-  
+  if (!token) return null;
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
-    next();
+    return jwt.verify(token, process.env.JWT_SECRET).user || null;
   } catch (err) {
-    // If token is invalid, continue without user (optional auth)
-    next();
+    return null;
   }
 };
+
+// Sets req.user when a valid token is sent, but lets anonymous requests through
+const optionalAuth = (req, res, next) => {
+  const user = getTokenUser(req);
+  if (user) req.user = user;
+  next();
+};
+
+// Rejects the request with 401 unless a valid token is sent
+const requireAuth = (req, res, next) => {
+  const user = getTokenUser(req);
+  if (!user) {
+    return res.status(401).json({ msg: 'Please log in to continue' });
+  }
+  req.user = user;
+  next();
+};
+
+module.exports = { optionalAuth, requireAuth };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { IMAGE_ACCEPT, USERNAME_HINT, USERNAME_PATTERN } from '../utils/validation';
 import './styles/Login.css';
 
 const Register = () => {
@@ -52,7 +53,7 @@ const Register = () => {
           </div>
           <div className="form-field">
             <label htmlFor="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="janedoe" onChange={handleChange} required />
+            <input type="text" id="username" name="username" placeholder="janedoe" pattern={USERNAME_PATTERN} title={USERNAME_HINT} onChange={handleChange} required />
           </div>
           <div className="form-field">
             <label htmlFor="email">Email</label>
@@ -60,11 +61,11 @@ const Register = () => {
           </div>
           <div className="form-field">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" onChange={handleChange} required />
+            <input type="password" id="password" name="password" placeholder="••••••••" minLength={6} onChange={handleChange} required />
           </div>
           <div className="file-input">
             <label>Profile Picture (optional)</label>
-            <input type="file" name="profile_pic" accept="image/*" onChange={handleFileChange} />
+            <input type="file" name="profile_pic" accept={IMAGE_ACCEPT} onChange={handleFileChange} />
           </div>
           <button type="submit">Register</button>
         </form>

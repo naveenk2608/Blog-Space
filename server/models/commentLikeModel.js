@@ -9,10 +9,15 @@ const toggleLike = async (commentId, userId) => {
     await pool.execute('DELETE FROM comment_likes WHERE id = ?', [existing[0].id]);
     return { liked: false };
   } else {
-    await pool.execute(
-      'INSERT INTO comment_likes (comment_id, user_id) VALUES (?, ?)',
-      [commentId, userId]
-    );
+    try {
+      await pool.execute(
+        'INSERT INTO comment_likes (comment_id, user_id) VALUES (?, ?)',
+        [commentId, userId]
+      );
+    } catch (err) {
+      // A simultaneous request (e.g. a double-click) already added this like
+      if (err.code !== 'ER_DUP_ENTRY') throw err;
+    }
     return { liked: true };
   }
 };
@@ -25,16 +30,7 @@ const getLikeCount = async (commentId) => {
   return rows[0].count;
 };
 
-const hasUserLiked = async (commentId, userId) => {
-  const [rows] = await pool.execute(
-    'SELECT id FROM comment_likes WHERE comment_id = ? AND user_id = ?',
-    [commentId, userId]
-  );
-  return rows.length > 0;
-};
-
 module.exports = {
   toggleLike,
-  getLikeCount,
-  hasUserLiked
+  getLikeCount
 };

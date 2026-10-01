@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { getImageUrl } from '../utils/imageUrl';
 import './styles/ProfileBlogCard.css';
 
-const ProfileBlogCard = ({ blog, onDelete }) => {
+const ProfileBlogCard = ({ blog, isOwner, onDelete }) => {
 
   // Get excerpt (short preview)
   const getExcerpt = (content) => {
@@ -54,18 +54,20 @@ const ProfileBlogCard = ({ blog, onDelete }) => {
           </span>
         </div>
 
-        {/* Action Buttons Footer */}
-        <div className="profile-card-actions">
-          <Link to={`/edit/${blog.id}`} className="edit-btn">
-            Edit
-          </Link>
-          <button onClick={handleDelete} className="delete-btn" title="Delete">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </div>
+        {/* Action Buttons Footer - only the author can edit or delete */}
+        {isOwner && (
+          <div className="profile-card-actions">
+            <Link to={`/edit/${blog.id}`} className="edit-btn">
+              Edit
+            </Link>
+            <button onClick={handleDelete} className="delete-btn" title="Delete">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

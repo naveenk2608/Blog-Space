@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
 import { getImageUrl } from '../utils/imageUrl';
+import { IMAGE_ACCEPT } from '../utils/validation';
 import './styles/CreateBlog.css'; // reuse same styles
 
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [form, setForm] = useState({
     title: '',
     content: '',
@@ -15,6 +19,9 @@ const EditBlog = () => {
     status: 'draft'
   });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
@@ -22,6 +29,11 @@ const EditBlog = () => {
       try {
         const res = await API.get(`/blogs/${id}`);
         const blog = res.data.blog;
+        // Only the author can edit (the server rejects anyone else's save anyway)
+        if (blog.user_id !== user.id) {
+          setLoadError('You can only edit your own posts.');
+          return;
+        }
         setForm({
           title: blog.title,
           content: blog.content,
@@ -31,12 +43,13 @@ const EditBlog = () => {
         });
       } catch (err) {
         console.error(err);
+        setLoadError(getErrorMessage(err, 'Could not load this blog.'));
       } finally {
         setLoading(false);
       }
     };
     fetchBlog();
-  }, [id]);
+  }, [id, user.id]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,7 +58,7 @@ const EditBlog = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setForm({ ...form, cover_image: file });
-    
+
     // Create preview URL
     if (file) {
       const url = URL.createObjectURL(file);
@@ -54,6 +67,9 @@ const EditBlog = () => {
   };
 
   const handleSubmit = async (status) => {
+    setErrorMsg('');
+    setSubmitting(true);
+
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('content', form.content);
@@ -68,10 +84,21 @@ const EditBlog = () => {
       navigate(`/blog/${id}`);
     } catch (err) {
       console.error(err);
+      setErrorMsg(getErrorMessage(err, 'Could not save your changes.'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
   if (loading) return <div>Loading...</div>;
+
+  if (loadError) {
+    return (
+      <div className="create-blog">
+        <p className="form-error">{loadError}</p>
+      </div>
+    );
+  }
 
   // Determine which image to show in the upload area
   const showImage = previewUrl || (form.existingCover && !form.cover_image ? getImageUrl(form.existingCover, '/default-avatar.png') : null);
@@ -94,7 +121,7 @@ const EditBlog = () => {
         <input
           type="file"
           id="cover"
-          accept="image/*"
+          accept={IMAGE_ACCEPT}
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
@@ -120,10 +147,12 @@ const EditBlog = () => {
         />
       </div>
 
+      {errorMsg && <p className="form-error">{errorMsg}</p>}
+
       <div className="form-actions">
         <button onClick={() => navigate(`/blog/${id}`)}>Cancel</button>
-        <button onClick={() => handleSubmit('draft')}>Save as Draft</button>
-        <button onClick={() => handleSubmit('published')} className="publish">Publish</button>
+        <button onClick={() => handleSubmit('draft')} disabled={submitting}>Save as Draft</button>
+        <button onClick={() => handleSubmit('published')} className="publish" disabled={submitting}>Publish</button>
       </div>
     </div>
   );

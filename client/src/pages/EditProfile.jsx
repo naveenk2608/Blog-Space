@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
 import { getAvatarUrl } from '../utils/imageUrl';
+import { IMAGE_ACCEPT, USERNAME_HINT, isValidUsername } from '../utils/validation';
 import './styles/EditProfile.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -26,6 +28,8 @@ const EditProfile = () => {
   const [usernameStatus, setUsernameStatus] = useState({ checked: false, available: null });
   const [checkingUsername, setCheckingUsername] = useState(false);
 
+  // Fill the form once per user, so refreshing the user (e.g. after deleting the photo)
+  // doesn't wipe edits that haven't been saved yet
   useEffect(() => {
     if (user) {
       setFormData({
@@ -38,7 +42,7 @@ const EditProfile = () => {
       setPreview(getAvatarUrl(user.profile_pic, user.name));
       }
     }
-  }, [user]);
+  }, [user?.id]);
 
   const getImagePath = (path) => {
     if (!path) return null;
@@ -70,9 +74,9 @@ const EditProfile = () => {
         return;
       }
 
-      // Only check if username is at least 3 characters
-      if (username.length < 3) {
-        setUsernameStatus({ checked: true, available: false });
+      // Check the format locally before asking the server
+      if (!isValidUsername(username)) {
+        setUsernameStatus({ checked: true, available: false, message: USERNAME_HINT });
         return;
       }
 
@@ -115,8 +119,9 @@ const EditProfile = () => {
     
     setDeletingPic(true);
     try {
-      const res = await API.delete('/users/profile-picture');
-      // AuthContext doesn't expose setUser; navigate away and refetch via profile page.
+      await API.delete('/users/profile-picture');
+      // Refresh the logged-in user so the navbar avatar and the Delete button update
+      await fetchUser();
       setPreview(null);
       setFormData(prev => ({ ...prev, profile_pic: null }));
       setSuccess('Profile picture deleted!');
@@ -138,7 +143,7 @@ const EditProfile = () => {
     try {
       const data = new FormData();
       data.append('name', formData.name);
-      data.append('username', formData.username);
+      data.append('username', formData.username.trim());
       data.append('bio', formData.bio);
       if (formData.profile_pic instanceof File) {
         data.append('profile_pic', formData.profile_pic);
@@ -173,14 +178,7 @@ const EditProfile = () => {
       }, 1500);
     } catch (err) {
       console.error('Error updating profile:', err);
-      const errorMsg = err.response?.data?.msg || 'Failed to update profile';
-      
-      // Check if it's a username taken error
-      if (err.response?.data?.msg?.toLowerCase().includes('username')) {
-        setError('This username is already taken. Please choose another.');
-      } else {
-        setError(errorMsg);
-      }
+      setError(getErrorMessage(err, 'Failed to update profile'));
     } finally {
       setLoading(false);
     }
@@ -239,7 +237,7 @@ const EditProfile = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={IMAGE_ACCEPT}
                 onChange={handleFileSelect}
                 className="file-input"
               />
@@ -263,7 +261,7 @@ const EditProfile = () => {
               {checkingUsername && <span className="username-status checking">Checking...</span>}
               {!checkingUsername && usernameStatus.checked && (
                 <span className={`username-status ${usernameStatus.available ? 'available' : 'taken'}`}>
-                  {usernameStatus.available ? '✓ Username available' : '✗ Username already taken'}
+                  {usernameStatus.available ? '✓ Username available' : `✗ ${usernameStatus.message || 'Username already taken'}`}
                 </span>
               )}
             </div>
@@ -307,7 +305,7 @@ const EditProfile = () => {
             <button 
               type="submit" 
               className="btn btn-primary"
-              disabled={loading}
+              disabled={loading || (usernameStatus.checked && !usernameStatus.available)}
             >
               {loading ? 'Saving...' : 'Save Changes'}
             </button>

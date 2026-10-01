@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
 
 const AuthContext = createContext();
 
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       await fetchUser();
       navigate('/');
     } catch (err) {
-      throw err.response.data.msg || 'Login failed';
+      throw getErrorMessage(err, 'Login failed');
     }
   };
 
@@ -61,7 +62,7 @@ export const AuthProvider = ({ children }) => {
       await fetchUser();
       navigate('/');
     } catch (err) {
-      throw err.response.data.msg || 'Registration failed';
+      throw getErrorMessage(err, 'Registration failed');
     }
   };
 

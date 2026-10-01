@@ -14,6 +14,7 @@ const BlogDetail = () => {
   const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [postingComment, setPostingComment] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,12 +39,15 @@ const BlogDetail = () => {
       alert('Please login to comment');
       return;
     }
+    setPostingComment(true);
     try {
       await API.post(`/comments/blog/${id}`, { content: newComment });
       setNewComment('');
       fetchBlog(); // refresh comments
     } catch (err) {
       console.error(err);
+    } finally {
+      setPostingComment(false);
     }
   };
 
@@ -109,7 +113,7 @@ const BlogDetail = () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            {blog.commentCount} comments
+            {comments.length} comments
           </span>
         </div>
         {isOwner && (
@@ -125,7 +129,7 @@ const BlogDetail = () => {
 
       {/* Comments Section */}
       <div className="comments-section">
-        <h3>Comments ({blog.commentCount})</h3>
+        <h3>Comments ({comments.length})</h3>
         {user ? (
           <form onSubmit={handleCommentSubmit} className="comment-form">
             <textarea
@@ -134,7 +138,7 @@ const BlogDetail = () => {
               onChange={(e) => setNewComment(e.target.value)}
               required
             />
-            <button type="submit">Post Comment</button>
+            <button type="submit" disabled={postingComment}>Post Comment</button>
           </form>
         ) : (
           <p>Please <Link to="/login">login</Link> to comment.</p>
