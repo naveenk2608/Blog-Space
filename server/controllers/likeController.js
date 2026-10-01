@@ -2,12 +2,13 @@ const blogLikeModel = require('../models/blogLikeModel');
 const commentLikeModel = require('../models/commentLikeModel');
 const blogModel = require('../models/blogModel');
 const commentModel = require('../models/commentModel');
+const { canViewBlog } = require('../utils/blogAccess');
 
 const toggleBlogLike = async (req, res) => {
   try {
     const { blogId } = req.params;
     const blog = await blogModel.getBlogById(blogId);
-    if (!blog) {
+    if (!blog || !canViewBlog(blog, req.user)) {
       return res.status(404).json({ msg: 'Blog not found' });
     }
 
@@ -26,6 +27,12 @@ const toggleCommentLike = async (req, res) => {
     const { commentId } = req.params;
     const comment = await commentModel.findCommentById(commentId);
     if (!comment) {
+      return res.status(404).json({ msg: 'Comment not found' });
+    }
+
+    // Comments on a draft are hidden along with the draft
+    const blog = await blogModel.getBlogById(comment.blog_id);
+    if (!blog || !canViewBlog(blog, req.user)) {
       return res.status(404).json({ msg: 'Comment not found' });
     }
 

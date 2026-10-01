@@ -85,7 +85,9 @@ Blog-Space/
 │       ├── services/
 │       │   └── api.js              # Axios instance with auth interceptor
 │       └── utils/
-│           └── imageUrl.js         # Cloudinary/avatar URL resolution
+│           ├── imageUrl.js         # Cloudinary/avatar URL resolution
+│           ├── errorMessage.js     # Readable messages from API errors
+│           └── validation.js       # Username rule + accepted image types
 └── server/                          # Express backend
     ├── server.js                    # App entry point
     ├── config/
@@ -108,8 +110,10 @@ Blog-Space/
     │   └── likeRoutes.js            # /api/likes
     ├── middleware/
     │   ├── authMiddleware.js        # Optional/required JWT verification
+    │   ├── rateLimiter.js           # Login brute-force protection
     │   └── uploadMiddleware.js      # Multer + Cloudinary storage
     └── utils/
+        ├── blogAccess.js            # Draft visibility rule
         └── validation.js            # express-validator rule sets
 ```
 
@@ -120,15 +124,15 @@ Blog-Space/
 | Route                              | Method | Auth | Description                              |
 | ----------------------------------- | ------ | ---- | ----------------------------------------- |
 | `/api/auth/register`                | POST   | —    | Register a new user                       |
-| `/api/auth/login`                   | POST   | —    | Login, returns JWT                        |
+| `/api/auth/login`                   | POST   | —    | Login, returns JWT (max 10 failed attempts per 15 min) |
 | `/api/auth/me`                      | GET    | ✅    | Get current authenticated user            |
 | `/api/users/:username`              | GET    | Optional | Public profile, stats, and blogs (drafts only shown to owner) |
 | `/api/users/profile`                | PUT    | ✅    | Update name/username/bio/profile picture  |
 | `/api/users/profile-picture`        | DELETE | ✅    | Remove profile picture                    |
-| `/api/users/check-username`         | GET    | —    | Check username availability               |
-| `/api/blogs`                        | GET    | ✅    | List published blogs                      |
+| `/api/users/check-username`         | GET    | Optional | Check username availability           |
+| `/api/blogs`                        | GET    | Optional | List published blogs, 10 per page (`?page=2`) |
 | `/api/blogs`                        | POST   | ✅    | Create a blog (draft or published)        |
-| `/api/blogs/:id`                    | GET    | ✅    | Get a single blog                         |
+| `/api/blogs/:id`                    | GET    | Optional | Get a single blog (drafts only for their author) |
 | `/api/blogs/:id`                    | PUT    | ✅    | Update a blog                             |
 | `/api/blogs/:id`                    | DELETE | ✅    | Delete a blog                             |
 | `/api/comments/blog/:blogId`        | POST   | ✅    | Add a comment                             |
@@ -208,7 +212,7 @@ Run the frontend:
 npm run dev
 ```
 
-The frontend (Vite) runs on `http://localhost:5173` by default and expects the backend at the URL configured in `VITE_API_BASE_URL`.
+The frontend (Vite) runs on `http://localhost:3000` (set in `vite.config.js`) and expects the backend at the URL configured in `VITE_API_BASE_URL`.
 
 ---
 

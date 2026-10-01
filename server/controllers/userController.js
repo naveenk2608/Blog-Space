@@ -1,10 +1,11 @@
 const userModel = require('../models/userModel');
 const blogModel = require('../models/blogModel');
+const { USERNAME_REGEX, USERNAME_MSG } = require('../utils/validation');
 
 const getProfile = async (req, res) => {
   try {
     const { username } = req.params;
-    const user = await userModel.findUserByUsername(username);
+    const user = await userModel.findPublicUserByUsername(username);
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
     }
@@ -29,6 +30,10 @@ const updateProfile = async (req, res) => {
       const existingUser = await userModel.findUserByUsername(username);
       if (existingUser && existingUser.id !== userId) {
         return res.status(400).json({ msg: 'Username already taken' });
+      }
+      // Only a new username is checked, so older accounts can keep theirs
+      if (!existingUser && !USERNAME_REGEX.test(username)) {
+        return res.status(400).json({ msg: USERNAME_MSG });
       }
     }
 

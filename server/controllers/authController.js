@@ -2,6 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/userModel');
 
+// Signed synchronously so a signing error is caught by the caller's try/catch
+// (throwing inside jwt.sign's callback would crash the whole server)
+const createToken = (userId) =>
+  jwt.sign({ user: { id: userId } }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
 const register = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
@@ -29,19 +34,8 @@ const register = async (req, res) => {
       profile_pic
     });
 
-    const payload = {
-      user: { id: userId }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, userId });
-      }
-    );
+    const token = createToken(userId);
+    res.json({ token, userId });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -66,19 +60,8 @@ const login = async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
-    const payload = {
-      user: { id: user.id }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token, userId: user.id });
-      }
-    );
+    const token = createToken(user.id);
+    res.json({ token, userId: user.id });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');

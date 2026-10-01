@@ -12,10 +12,15 @@ const toggleLike = async (blogId, userId) => {
     return { liked: false };
   } else {
     // Like
-    await pool.execute(
-      'INSERT INTO blog_likes (blog_id, user_id) VALUES (?, ?)',
-      [blogId, userId]
-    );
+    try {
+      await pool.execute(
+        'INSERT INTO blog_likes (blog_id, user_id) VALUES (?, ?)',
+        [blogId, userId]
+      );
+    } catch (err) {
+      // A simultaneous request (e.g. a double-click) already added this like
+      if (err.code !== 'ER_DUP_ENTRY') throw err;
+    }
     return { liked: true };
   }
 };

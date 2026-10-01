@@ -1,5 +1,6 @@
 const commentModel = require('../models/commentModel');
 const blogModel = require('../models/blogModel');
+const { canViewBlog } = require('../utils/blogAccess');
 
 const addComment = async (req, res) => {
   try {
@@ -7,7 +8,7 @@ const addComment = async (req, res) => {
     const { content } = req.body;
 
     const blog = await blogModel.getBlogById(blogId);
-    if (!blog) {
+    if (!blog || !canViewBlog(blog, req.user)) {
       return res.status(404).json({ msg: 'Blog not found' });
     }
 

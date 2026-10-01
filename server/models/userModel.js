@@ -19,6 +19,15 @@ const findUserByUsername = async (username) => {
   return rows[0];
 };
 
+// Public profile fields only: the password hash and email must never reach other users
+const findPublicUserByUsername = async (username) => {
+  const [rows] = await pool.execute(
+    'SELECT id, name, username, profile_pic, bio, created_at FROM users WHERE username = ?',
+    [username]
+  );
+  return rows[0];
+};
+
 const findUserById = async (id) => {
   const [rows] = await pool.execute('SELECT id, name, username, email, profile_pic, bio, created_at FROM users WHERE id = ?', [id]);
   return rows[0];
@@ -95,6 +104,7 @@ module.exports = {
   createUser,
   findUserByEmail,
   findUserByUsername,
+  findPublicUserByUsername,
   findUserById,
   updateUser,
   getUserStats

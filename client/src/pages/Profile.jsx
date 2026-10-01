@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import ProfileBlogCard from '../components/ProfileBlogCard';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
 import { getAvatarUrl } from '../utils/imageUrl';
+import { IMAGE_ACCEPT } from '../utils/validation';
 import './styles/Profile.css';
 
 const Profile = () => {
@@ -17,19 +19,28 @@ const Profile = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    // Ignore a slow response for a profile we've already navigated away from
+    let ignore = false;
+
     const fetchProfile = async () => {
+      // Clear the previous profile so a failed load shows "User not found", not old data
+      setLoading(true);
+      setProfile(null);
       try {
         const res = await API.get(`/users/${username}`);
+        if (ignore) return;
         setProfile(res.data.user);
         setStats(res.data.stats);
         setBlogs(res.data.blogs);
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
     fetchProfile();
+
+    return () => { ignore = true; };
   }, [username]);
 
   const handleFileSelect = (e) => {
@@ -54,7 +65,7 @@ const Profile = () => {
       }
     } catch (err) {
       console.error('Error uploading profile picture:', err);
-      alert('Failed to upload profile picture');
+      alert(getErrorMessage(err, 'Failed to upload profile picture'));
     } finally {
       setUploading(false);
     }
@@ -78,7 +89,7 @@ const Profile = () => {
   if (loading) return <div>Loading...</div>;
   if (!profile) return <div>User not found</div>;
 
-  const isOwnProfile = currentUser && currentUser.username === username;
+  const isOwnProfile = !!currentUser && currentUser.id === profile.id;
 
   return (
     <div className="profile">
@@ -115,7 +126,7 @@ const Profile = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={IMAGE_ACCEPT}
               onChange={handleFileSelect}
               className="profile-file-input"
             />
@@ -155,7 +166,7 @@ const Profile = () => {
 
       {/* My Blogs Section */}
       <div className="my-blogs-section">
-        <h2 className="section-header">My Blogs</h2>
+        <h2 className="section-header">{isOwnProfile ? 'My Blogs' : 'Blogs'}</h2>
         
         {blogs.length === 0 ? (
           <p className="no-blogs">No blogs yet.</p>
@@ -165,6 +176,7 @@ const Profile = () => {
               <ProfileBlogCard 
                 key={blog.id} 
                 blog={blog} 
+                isOwner={isOwnProfile}
                 onDelete={handleDeleteBlog}
               />
             ))}

@@ -21,9 +21,27 @@
 
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(3, 1fr);
   gap: 32px;
   width: 100%;
+}
+
+/* Load more - spans the full grid row below the cards */
+.load-more-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  padding: 10px 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 /* Responsive - Tablet (2 columns) */

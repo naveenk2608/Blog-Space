@@ -9,17 +9,18 @@ const createComment = async (comment) => {
   return result.insertId;
 };
 
-const getCommentsByBlogId = async (blogId) => {
+const getCommentsByBlogId = async (blogId, userId = null) => {
   const [rows] = await pool.execute(
     `SELECT c.*, u.name, u.username, u.profile_pic,
-      (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likeCount
+      (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as likeCount,
+      EXISTS(SELECT 1 FROM comment_likes WHERE comment_id = c.id AND user_id = ?) as likedByUser
      FROM comments c
      JOIN users u ON c.user_id = u.id
      WHERE c.blog_id = ?
      ORDER BY c.created_at ASC`,
-    [blogId]
+    [userId, blogId]
   );
-  return rows;
+  return rows.map((row) => ({ ...row, likedByUser: Boolean(row.likedByUser) }));
 };
 
 const updateComment = async (id, content) => {

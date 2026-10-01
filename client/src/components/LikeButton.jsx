@@ -7,18 +7,24 @@ const LikeButton = ({ itemId, type, initialLiked, initialCount }) => {
   const { user } = useAuth();
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
+  const [pending, setPending] = useState(false);
 
   const handleLike = async () => {
     if (!user) {
       alert('Please login to like');
       return;
     }
+    // Ignore extra clicks until the current request finishes
+    if (pending) return;
+    setPending(true);
     try {
       const res = await API.post(`/likes/${type}/${itemId}`);
       setLiked(res.data.liked);
       setCount(res.data.likeCount);
     } catch (err) {
       console.error(err);
+    } finally {
+      setPending(false);
     }
   };
 

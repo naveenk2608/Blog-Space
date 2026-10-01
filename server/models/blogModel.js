@@ -10,20 +10,21 @@ const createBlog = async (blog) => {
 };
 
 // Change .execute to .query here
-const getBlogs = async (limit, offset, status = 'published') => {
+const getBlogs = async (limit, offset, status = 'published', userId = null) => {
   // Use .query instead of .execute
   const [rows] = await pool.query(
     `SELECT b.*, u.name, u.username, u.profile_pic,
       (SELECT COUNT(*) FROM blog_likes WHERE blog_id = b.id) as likeCount,
-      (SELECT COUNT(*) FROM comments WHERE blog_id = b.id) as commentCount
+      (SELECT COUNT(*) FROM comments WHERE blog_id = b.id) as commentCount,
+      EXISTS(SELECT 1 FROM blog_likes WHERE blog_id = b.id AND user_id = ?) as likedByUser
      FROM blogs b
      JOIN users u ON b.user_id = u.id
      WHERE b.status = ?
      ORDER BY b.created_at DESC
      LIMIT ? OFFSET ?`,
-    [status, limit, offset]
+    [userId, status, limit, offset]
   );
-  return rows;
+  return rows.map((row) => ({ ...row, likedByUser: Boolean(row.likedByUser) }));
 };
 
 const getBlogById = async (id) => {
@@ -58,6 +59,10 @@ const updateBlog = async (id, updates) => {
   if (status) {
     query += 'status = ?, ';
     params.push(status);
+  }
+  // Nothing to update: don't run an invalid "UPDATE blogs SE WHERE ..." query
+  if (params.length === 0) {
+    return false;
   }
   query = query.slice(0, -2);
   query += ' WHERE id = ?';

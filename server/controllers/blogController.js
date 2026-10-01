@@ -1,18 +1,11 @@
 const blogModel = require('../models/blogModel');
 const commentModel = require('../models/commentModel');
 const blogLikeModel = require('../models/blogLikeModel');
-const commentLikeModel = require('../models/commentLikeModel'); // for comments in detail
-
-const normalizeStatus = (status) => {
-  if (typeof status !== 'string') return status;
-  const s = status.trim().toLowerCase();
-  // only allow known values; otherwise keep as-is
-  if (s === 'draft' || s === 'published') return s;
-  return s;
-};
+const { canViewBlog } = require('../utils/blogAccess');
 
 const createBlog = async (req, res) => {
   try {
+    // status is already validated and normalized by validateBlog
     const { title, content, status } = req.body;
     const cover_image = req.file ? req.file.path : null;
 
@@ -21,36 +14,24 @@ const createBlog = async (req, res) => {
       title,
       content,
       cover_image,
-      status: normalizeStatus(status)
+      status
     });
 
     res.json({ blogId, msg: 'Blog created' });
   } catch (err) {
     console.error(err);
-
-    // Multer/upload errors (e.g., unsupported file type)
-    if (err && err.code === 'LIMIT_UNSUPPORTED_TYPE') {
-      return res.status(400).json({ msg:  'This file type is not supported' });
-    }
-
     res.status(500).send('Server error');
   }
 };
 
 const getBlogs = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = 10;
     const offset = (page - 1) * limit;
 
-    const blogs = await blogModel.getBlogs(limit, offset, 'published');
-
-    // Add likedByUser status for each blog if user is authenticated
-    if (req.user) {
-      for (let blog of blogs) {
-        blog.likedByUser = await blogLikeModel.hasUserLiked(blog.id, req.user.id);
-      }
-    }
+    // likedByUser is worked out in the same query
+    const blogs = await blogModel.getBlogs(limit, offset, 'published', req.user?.id);
 
     res.json(blogs);
   } catch (err) {
@@ -62,19 +43,13 @@ const getBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
   try {
     const blog = await blogModel.getBlogById(req.params.id);
-    if (!blog) {
+    // Other users get the same 404 for a draft as for a missing blog
+    if (!blog || !canViewBlog(blog, req.user)) {
       return res.status(404).json({ msg: 'Blog not found' });
     }
 
-    // Get comments with like counts and user info
-    const comments = await commentModel.getCommentsByBlogId(blog.id);
-
-    // For each comment, check if current user liked it (if authenticated)
-    if (req.user) {
-      for (let comment of comments) {
-        comment.likedByUser = await commentLikeModel.hasUserLiked(comment.id, req.user.id);
-      }
-    }
+    // Get comments with like counts, user info and whether the current user liked each one
+    const comments = await commentModel.getCommentsByBlogId(blog.id, req.user?.id);
 
     // Check if current user liked the blog
     if (req.user) {
@@ -105,7 +80,7 @@ const updateBlog = async (req, res) => {
     if (title) updates.title = title;
     if (content) updates.content = content;
     if (cover_image) updates.cover_image = cover_image;
-    if (status !== undefined) updates.status = normalizeStatus(status);
+    if (status !== undefined) updates.status = status;
 
     const updated = await blogModel.updateBlog(req.params.id, updates);
     if (!updated) {
