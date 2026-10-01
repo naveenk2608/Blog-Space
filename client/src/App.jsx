@@ -1,5 +1,6 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import { LoadingMessage } from './components/StatusMessage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import BlogDetail from './pages/BlogDetail';
 import CreateBlog from './pages/CreateBlog';
@@ -12,12 +13,11 @@ import Register from './pages/Register';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingMessage />;
   return user ? children : <Navigate to="/login" />;
 };
 
 function AppContent() {
-  const { user } = useAuth();
   return (
     <>
       <Navbar />

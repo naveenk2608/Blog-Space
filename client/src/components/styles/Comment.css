@@ -124,3 +124,10 @@
   outline: none;
   border-color: #3B82F6;
 }
+
+/* Edit / delete failure message */
+.comment-error {
+  margin: 8px 0 0;
+  color: #B91C1C;
+  font-size: 13px;
+}

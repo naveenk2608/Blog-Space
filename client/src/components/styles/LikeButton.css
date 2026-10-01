@@ -18,3 +18,15 @@
 .like-icon {
   font-size: 16px;
 }
+
+/* Keeps a failed like message beside the button without breaking the row */
+.like-button-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.like-error {
+  color: #B91C1C;
+  font-size: 12px;
+}

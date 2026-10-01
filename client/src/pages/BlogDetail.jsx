@@ -1,37 +1,60 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import CommentList from '../components/CommentList';
 import LikeButton from '../components/LikeButton';
+import StatusMessage, { LoadingMessage } from '../components/StatusMessage';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
+import { getErrorMessage } from '../utils/errorMessage';
 import { getImageUrl, getAvatarUrl } from '../utils/imageUrl';
 import './styles/BlogDetail.css';
 
 const BlogDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [postingComment, setPostingComment] = useState(false);
+  const [commentError, setCommentError] = useState('');
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchBlog();
-  }, [id]);
+  const [error, setError] = useState(null);
 
   const fetchBlog = async () => {
-    try {
-      const res = await API.get(`/blogs/${id}`);
-      setBlog(res.data.blog);
-      setComments(res.data.comments);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    const res = await API.get(`/blogs/${id}`);
+    setBlog(res.data.blog);
+    setComments(res.data.comments);
   };
+
+  const loadBlog = useCallback(() => {
+    // Ignore a slow response for a post we've already navigated away from
+    let ignore = false;
+    setLoading(true);
+    setError(null);
+
+    (async () => {
+      try {
+        const res = await API.get(`/blogs/${id}`);
+        if (ignore) return;
+        setBlog(res.data.blog);
+        setComments(res.data.comments);
+      } catch (err) {
+        if (ignore) return;
+        console.error(err);
+        // A missing post is a dead end; anything else is worth retrying
+        setError({
+          notFound: err?.response?.status === 404,
+          message: getErrorMessage(err, 'Could not load this post.')
+        });
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+
+    return () => { ignore = true; };
+  }, [id]);
+
+  useEffect(() => loadBlog(), [loadBlog]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -40,12 +63,22 @@ const BlogDetail = () => {
       return;
     }
     setPostingComment(true);
+    setCommentError('');
     try {
       await API.post(`/comments/blog/${id}`, { content: newComment });
-      setNewComment('');
-      fetchBlog(); // refresh comments
     } catch (err) {
       console.error(err);
+      setCommentError(getErrorMessage(err, 'Could not post your comment.'));
+      setPostingComment(false);
+      return;
+    }
+
+    setNewComment('');
+    try {
+      await fetchBlog(); // refresh comments
+    } catch (err) {
+      console.error(err);
+      setCommentError('Your comment was posted, but the page could not refresh. Reload to see it.');
     } finally {
       setPostingComment(false);
     }
@@ -59,8 +92,34 @@ const BlogDetail = () => {
     setComments(comments.filter(c => c.id !== commentId));
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!blog) return <div>Blog not found</div>;
+  if (loading) return <LoadingMessage message="Loading post..." />;
+
+  if (error) {
+    return error.notFound ? (
+      <StatusMessage
+        title="Post not found"
+        message="This post may have been removed, or it is still a draft."
+        action={<Link to="/">Back to home</Link>}
+      />
+    ) : (
+      <StatusMessage
+        variant="error"
+        title="Could not load this post"
+        message={error.message}
+        action={<button type="button" onClick={loadBlog}>Try again</button>}
+      />
+    );
+  }
+
+  if (!blog) {
+    return (
+      <StatusMessage
+        title="Post not found"
+        message="This post may have been removed, or it is still a draft."
+        action={<Link to="/">Back to home</Link>}
+      />
+    );
+  }
 
   const isOwner = user && user.id === blog.user_id;
 
@@ -138,7 +197,10 @@ const BlogDetail = () => {
               onChange={(e) => setNewComment(e.target.value)}
               required
             />
-            <button type="submit" disabled={postingComment}>Post Comment</button>
+            <button type="submit" disabled={postingComment}>
+              {postingComment ? 'Posting...' : 'Post Comment'}
+            </button>
+            {commentError && <p className="comment-error">{commentError}</p>}
           </form>
         ) : (
           <p>Please <Link to="/login">login</Link> to comment.</p>

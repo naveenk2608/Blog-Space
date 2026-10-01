@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import StatusMessage, { LoadingMessage } from '../components/StatusMessage';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -90,13 +91,16 @@ const EditBlog = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingMessage message="Loading post..." />;
 
   if (loadError) {
     return (
-      <div className="create-blog">
-        <p className="form-error">{loadError}</p>
-      </div>
+      <StatusMessage
+        variant="error"
+        title="Could not open this post"
+        message={loadError}
+        action={<Link to="/">Back to home</Link>}
+      />
     );
   }
 

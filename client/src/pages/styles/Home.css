@@ -68,3 +68,12 @@
     gap: 24px;
   }
 }
+
+/* "Load more" failure message - spans the full grid row */
+.load-more-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  text-align: center;
+  color: #B91C1C;
+  font-size: 14px;
+}

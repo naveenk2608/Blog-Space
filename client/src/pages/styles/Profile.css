@@ -177,14 +177,6 @@
   gap: 24px;
 }
 
-/* No Blogs Message */
-.no-blogs {
-  color: #64748b;
-  font-size: 15px;
-  text-align: center;
-  padding: 40px 0;
-}
-
 /* Responsive - Mobile */
 @media (max-width: 640px) {
   .profile {

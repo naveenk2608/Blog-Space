@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ProfileBlogCard from '../components/ProfileBlogCard';
+import StatusMessage, { LoadingMessage } from '../components/StatusMessage';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { getErrorMessage } from '../utils/errorMessage';
@@ -15,16 +16,18 @@ const Profile = () => {
   const [stats, setStats] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
     // Ignore a slow response for a profile we've already navigated away from
     let ignore = false;
 
     const fetchProfile = async () => {
-      // Clear the previous profile so a failed load shows "User not found", not old data
+      // Clear the previous profile so a failed load shows the error, not old data
       setLoading(true);
+      setError(null);
       setProfile(null);
       try {
         const res = await API.get(`/users/${username}`);
@@ -33,7 +36,13 @@ const Profile = () => {
         setStats(res.data.stats);
         setBlogs(res.data.blogs);
       } catch (err) {
+        if (ignore) return;
         console.error(err);
+        // A missing user is a dead end; anything else is worth retrying
+        setError({
+          notFound: err?.response?.status === 404,
+          message: getErrorMessage(err, 'Could not load this profile.')
+        });
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -42,6 +51,8 @@ const Profile = () => {
 
     return () => { ignore = true; };
   }, [username]);
+
+  useEffect(() => loadProfile(), [loadProfile]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -86,8 +97,24 @@ const Profile = () => {
     fileInputRef.current.click();
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (!profile) return <div>User not found</div>;
+  if (loading) return <LoadingMessage message="Loading profile..." />;
+
+  if (error || !profile) {
+    return error && !error.notFound ? (
+      <StatusMessage
+        variant="error"
+        title="Could not load this profile"
+        message={error.message}
+        action={<button type="button" onClick={loadProfile}>Try again</button>}
+      />
+    ) : (
+      <StatusMessage
+        title="User not found"
+        message={`There is no profile for @${username}.`}
+        action={<Link to="/">Back to home</Link>}
+      />
+    );
+  }
 
   const isOwnProfile = !!currentUser && currentUser.id === profile.id;
 
@@ -150,15 +177,15 @@ const Profile = () => {
         {/* Stats Row - Only Blogs, Likes, Comments (no Views) */}
         <div className="profile-stats-row">
           <div className="profile-stat-item">
-            <span className="profile-stat-number">{stats.blogsCount}</span>
+            <span className="profile-stat-number">{stats?.blogsCount ?? 0}</span>
             <span className="profile-stat-label">Blogs</span>
           </div>
           <div className="profile-stat-item">
-            <span className="profile-stat-number">{stats.totalLikesReceived}</span>
+            <span className="profile-stat-number">{stats?.totalLikesReceived ?? 0}</span>
             <span className="profile-stat-label">Likes</span>
           </div>
           <div className="profile-stat-item">
-            <span className="profile-stat-number">{stats.totalCommentsReceived}</span>
+            <span className="profile-stat-number">{stats?.totalCommentsReceived ?? 0}</span>
             <span className="profile-stat-label">Comments</span>
           </div>
         </div>
@@ -169,7 +196,13 @@ const Profile = () => {
         <h2 className="section-header">{isOwnProfile ? 'My Blogs' : 'Blogs'}</h2>
         
         {blogs.length === 0 ? (
-          <p className="no-blogs">No blogs yet.</p>
+          <StatusMessage
+            title={isOwnProfile ? 'No posts yet' : 'Nothing published yet'}
+            message={isOwnProfile
+              ? 'Your published posts will show up here.'
+              : `${profile.name} has not published anything yet.`}
+            action={isOwnProfile ? <Link to="/create">Write your first post</Link> : null}
+          />
         ) : (
           <div className="blog-grid">
             {blogs.map(blog => (
